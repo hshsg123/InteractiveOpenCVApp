@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
             if(!OpenCVLoader.initDebug())
             {
+
+
+                
                 Log.d("opencv","初始化失败");
             }
 
