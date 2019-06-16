@@ -7,8 +7,15 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.*;
+import org.opencv.imgproc.Imgproc;
+
 /**
  * 画板视图
  * @author Administrator
@@ -22,13 +29,25 @@ public class DrawView  extends View{
     private Bitmap mBitmap;
     private Paint paint = null;
     public int sta1 = 2;
+    private Mat firstMask = null;
+    public Bitmap rawImg;
+    public Bitmap resultMap;
+    public ImageView imageView;
+    private boolean isTouchEnd = false;
+
 
 
     public DrawView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         inite();
-        // TODO Auto-generated constructor stub
+        if(!OpenCVLoader.initDebug())
+        {
+            Log.d("opencv","初始化失败");
+        }
+
+
+        firstMask = new Mat();
     }
 
     /**
@@ -116,6 +135,8 @@ public class DrawView  extends View{
                 case MotionEvent.ACTION_UP://收笔
                     stopX = event.getX();
                     stopY = event.getY();
+
+
                     invalidate();
                     break;
                 default:
@@ -144,7 +165,9 @@ public class DrawView  extends View{
                     mCanvas.drawLine(startX, startY, stopX, startY, paint);
                     mCanvas.drawLine(startX, stopY, stopX, stopY, paint);
                     mCanvas.drawLine(stopX, startY, stopX, stopY, paint);
+                    isTouchEnd = true;
                     invalidate();
+
                     break;
                 default:
                     break;
@@ -160,6 +183,42 @@ public class DrawView  extends View{
         super.onDraw(canvas);
 //		mCanvas.drawLine(startX, startY, stopX, stopY, paint);
         canvas.drawBitmap(mBitmap,0 , 0, null);
+        if (isTouchEnd) {
+            isTouchEnd = false;
+            resultMap = beginGrabcut(rawImg, startX, startY, stopX, stopY);
+
+            if (imageView != null) {
+                imageView.setImageBitmap(resultMap);
+            }
+        }
+
+
+    }
+
+    private Bitmap beginGrabcut(Bitmap bitmap, double beginX, double beginY, double endX, double endY)
+    {
+        Mat img = new Mat();
+        Rect rect = new Rect(new Point(beginX, beginY), new Point(endX, endY));
+
+        Utils.bitmapToMat(bitmap, img);
+        Imgproc.cvtColor(img, img, Imgproc.COLOR_RGBA2RGB);
+
+        //生成遮板
+        Mat bgModel = new Mat();
+        Mat fgModel = new Mat();
+        Mat source = new Mat(1, 1, CvType.CV_8U, new Scalar(Imgproc.GC_PR_FGD));
+        Imgproc.grabCut(img, firstMask, rect,bgModel, fgModel,1, Imgproc.GC_INIT_WITH_RECT);
+        Core.compare(firstMask, source, firstMask, Core.CMP_EQ);
+
+        //抠图
+        Mat foreground = new Mat(img.size(), CvType.CV_8UC3, new Scalar(255, 255, 255));
+        img.copyTo(foreground, firstMask);
+
+        //mat->bitmap
+        Bitmap b = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(foreground,b);
+
+        return b;
     }
 
 }
