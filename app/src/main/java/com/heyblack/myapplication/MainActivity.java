@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         imageView = findViewById(R.id.imageView);
-        imageView.get       
 
         if(!OpenCVLoader.initDebug())
         {
