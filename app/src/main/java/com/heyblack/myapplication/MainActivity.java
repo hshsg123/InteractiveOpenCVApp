@@ -9,9 +9,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private ImageView imageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +36,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-            if(!OpenCVLoader.initDebug())
-            {
-                Log.d("opencv","初始化失败");
-            }
 
+        imageView = findViewById(R.id.imageView);
+        imageView.get       
+
+        if(!OpenCVLoader.initDebug())
+        {
+            Log.d("opencv","初始化失败");
+        }
+
+    }
+
+
+    private void beginGrabCut()
+    {
+        Mat img = new Mat();
+
+
+        Imgproc.grabCut();
     }
 
     @Override
