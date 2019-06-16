@@ -1,7 +1,9 @@
 package com.heyblack.myapplication;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -9,20 +11,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Mat firstMask = new Mat();
+    private Mat firstMask = null;
     private DrawView Draw1 = null;//画板视图
     private Button btn1 = null;
     private Button btn2 = null;
     private Button btn3 = null;
     private Button btn4 = null;
     private Button btn5 = null;
+    public Bitmap bitmap=BitmapFactory.decodeStream(getClass().getResourceAsStream("/res/drawable/l729.jpg"));
+
+    ImageView img;
+    String path;
+    String filepath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
             Log.d("opencv","初始化失败");
         }
 
+
+        firstMask = new Mat();
 
 
     }
@@ -72,6 +83,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        btn1 = (Button)findViewById(R.id.button1);
+        btn1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                img = (ImageView) findViewById(R.id.imageView1);
+                img.setImageBitmap(bitmap);
+                //getPhoto();
+            }
+        });
+        btn2 = (Button)findViewById(R.id.button2);
+        btn2.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Draw1.changeSta(2);
+            }
+        });
+
 
 
         btn3 = (Button)findViewById(R.id.button3);
@@ -102,6 +133,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private  void getPhoto(){
+        img = (ImageView) findViewById(R.id.imageView1);
+        File sd = Environment.getExternalStorageDirectory();
+        path = sd.getPath();//获得手机内存storage的位置
+        filepath = path + "/Pictures/Screenshots/S90606-180018.JPG";//storage下需要全屏显示的图片路径（要根据自己手机中需要显示图片路径位置进行修改）
+        File file = new File(filepath);
+        System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<"+filepath);
+        if (file.exists()) {
+            System.out.println("<<<<<<<<<<<<<<<<<<<<<<<4");
+            Bitmap bm = BitmapFactory.decodeFile(filepath);//获得设置路径下图片并编码为Bitmap格式
+
+            System.out.println("<<<<<<<<<<<<<<<<<5");
+            img.setImageBitmap(bm);//设置图片为背景图
+        }
+        else {
+            System.err.println("<<<<<<<<<<<<<404 Not Find");//控制台输出没找到图片
+        }
+    }
+
+
 
     private Bitmap beginGrabcut(Bitmap bitmap, double beginX, double beginY, double endX, double endY)
     {
