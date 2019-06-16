@@ -1,3 +1,3 @@
 # InteractiveOpenCVApp
 
-电子综合设计作业
+电子综合设计作业 
