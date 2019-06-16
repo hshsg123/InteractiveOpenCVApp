@@ -7,11 +7,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
+import android.widget.Button;
 import android.view.MenuItem;
 import android.view.View;
 import org.opencv.android.OpenCVLoader;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DrawView Draw1 = null;//画板视图
+    private Button btn1 = null;
+    private Button btn2 = null;
+    private Button btn3 = null;
+    private Button btn4 = null;
+    private Button btn5 = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,20 +28,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        //图版初始化、设置等操作
+        inite();
+
+
 
             if(!OpenCVLoader.initDebug())
             {
-
-
-                
                 Log.d("opencv","初始化失败");
             }
 
@@ -60,4 +61,43 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+    private void inite(){
+        Draw1=(DrawView)findViewById(R.id.writting);
+
+
+
+
+
+        btn3 = (Button)findViewById(R.id.button3);
+        btn3.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Draw1.changeSta(2);
+            }
+        });
+        btn4 = (Button)findViewById(R.id.button4);
+        btn4.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Draw1.changeSta(0);
+            }
+        });
+        btn5 = (Button)findViewById(R.id.button5);
+        btn5.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+    }
+
+
 }
